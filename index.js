@@ -1,46 +1,95 @@
 var fs = require('fs'),
-  chunkingStreams = require('chunking-streams'),
-  EventEmitter = require('events').EventEmitter,
   util = require('util'),
-  though = require('through');
+  through = require('through');
 
 
-var randomAccessRemove = function(options){
+var randomAccessRemove = function(options) {
 
   options = options || {
-    chunkSize: 1024;
+    chunkSize: 1024
   }
 
   if (!(this instanceof randomAccessRemove))
-     return new randomAccessRemove(options);
+    return new randomAccessRemove(options);
 
+  function remove(filename, offset, lengthToRemove, callback) {
+    debugger;
 
-  function remove(filename, offet, length, callback){
+    if (!fs.existsSync(filename)) {
+      console.error(filename + " doesn't exist :(");
+      process.nextTick(function() {
+        callback({
+          message: filename + " doesn't exist :("
+        })
+      })
+      return;
+    }
 
-    var source = fs.createReadStream(fileName);
+    var source = fs.createReadStream(filename);
 
-    var destination = fs.createWriteStream(fileName);
+    var destination = fs.createWriteStream(filename + ".tmp");
 
-    var chunker = new SizeChunker({
-      chunkSize: options.chunkSize,
-      flushTail: true
-    });
+    var byteOffset = 0,
+      allow = true,
+      diff = 0,
+      start, end;
+    toRemoveStart = offset,
+      toRemoveEnd = offset + lengthToRemove;
 
-    var byteCount = 0;
+    var onData = function(buffer) {
 
-    //we need to block the buffer chunks that
-    // are within offset->offset+length
-    chunker.on('data', function(chunk) {
+      start = byteOffset;
 
-      byteCount+=chunk.data.length;
+      end = byteOffset + buffer.length;
 
-      if(byteCount > offset){
+      byteOffset += buffer.length;
 
+      //all clear
+      if (start > toRemoveEnd || end < toRemoveStart) {
+        this.queue(buffer);
+
+        return;
       }
 
+      //start outside and end within removal range
+      if (start <= toRemoveStart && end <= toRemoveEnd) {
+        //remove the file contents within removal range
+        var slicedBuf = buffer.slice(0, (end - offset));
+        this.queue(slicedBuf);
+      }
+      //start within removal range and end within it
+      else if (start >= toRemoveStart && end <= toRemoveEnd) {
+        //don't add any contents to the output file
+      }
+      //start within removal range and end out of it
+      else if (start >= toRemoveStart && end >= toRemoveEnd) {
+        var slicedBuf = buffer.slice((toRemoveEnd - start), buffer.length);
+        this.queue(slicedBuf);
+
+        //we have stepped over the removal range and have to
+        // do a splice and concat
+      } else if (start <= toRemoveStart && end >= toRemoveEnd) {
+        var slicedBuf1 = buffer.slice(0, toRemoveStart);
+        var slicedBuf2 = buffer.slice(toRemoveEnd, buffer.length);
+
+        this.queue(Buffer.concat([slicedBuf1, slicedBuf2]));
+      }
+    };
+
+    source.on('close', function() {
+
+      fs.unlink(filename, function(err) {
+        if (err)
+          throw err;
+        fs.renameSync(filename + ".tmp", filename);
+        process.nextTick(callback);
+      });
+
     });
 
-    source.pipe(chunker).(new through(onData)).pipe(destination);
+    source.
+    pipe(new through(onData)).
+    pipe(destination);
   };
 
   return {
