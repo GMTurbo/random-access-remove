@@ -96,5 +96,12 @@ var randomAccessRemove = function(options) {
     remove: remove
   };
 };
+//
+// var rar = new randomAccessRemove();
+//
+// rar.remove('test.txt', 0, 1024, function(err) {
+//   if (err)
+//     console.error(err);
+// });
 
 module.exports = randomAccessRemove;

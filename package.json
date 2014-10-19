@@ -1,7 +1,7 @@
 {
   "name": "random-access-remove",
   "version": "1.0.0",
-  "description": "",
+  "description": "remove bytes within files given an offset and a length",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
     "url": "https://github.com/GMTurbo/random-access-remove.git"
   },
   "author": "Gabe Testa <gabe.testa@gmail.com> (http://gmturboism.com/)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GMTurbo/random-access-remove/issues"
   },
