@@ -24,7 +24,7 @@ rar.remove('test.txt', 0, 1024, function(err) {
 ```
 ## Inspiration
 
-The format of this module is a copy of the awesome module [random-access-file](https://github.com/mafintosh/random-access-file) by [mafintosh](https://github.com/mafintosh).  This module is not affiliated with that module and was written to follow the already created format of random-access-file.
+The format of this module is a copy of the awesome module [random-access-file](https://github.com/mafintosh/random-access-file) by [mafintosh](https://github.com/mafintosh).  This module is not affiliated with that module and was written to follow the format outlined in random-access because it makes sense.
 
 ## License
 

@@ -18,5 +18,11 @@
   "homepage": "https://github.com/GMTurbo/random-access-remove",
   "dependencies": {
     "through": "^2.3.6"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [
+    "fs",
+    "blocks",
+    "random-access"
+  ]
 }
