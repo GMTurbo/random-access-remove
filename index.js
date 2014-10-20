@@ -2,7 +2,6 @@ var fs = require('fs'),
   util = require('util'),
   through = require('through');
 
-
 var randomAccessRemove = function(options) {
 
   options = options || {
