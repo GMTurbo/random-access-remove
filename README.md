@@ -29,11 +29,11 @@ The format of this module is a copy of the awesome module [random-access-file](h
 ##Implementation
 
 Under the hood, this module does the following:
-1. creates a readstream of the file arg
-2. creates a tmp output file (file + '.tmp')
-3. intercepts the piped data and excludes the data within the range passed to it
-4. deletes the original file arg
-5. renames the .tmp file to the original file name
+1. *creates a readstream of the file arg*
+2. *creates a tmp output file (file + '.tmp')*
+3. *intercepts the piped data and excludes the data within the range passed to it*
+4. *deletes the original file arg*
+5. *renames the .tmp file to the original file name*
 
 ## License
 
