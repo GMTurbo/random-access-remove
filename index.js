@@ -94,16 +94,99 @@ var randomAccessRemove = function(options) {
     pipe(destination);
   };
 
+  function removeAll(filename, offsets, callback){
+
+    if (!fs.existsSync(filename)) {
+
+      console.error(filename + " doesn't exist :(");
+
+      process.nextTick(function() {
+        callback({
+          message: filename + " doesn't exist :("
+        });
+      });
+
+      return;
+    }
+
+    var source = fs.createReadStream(filename);
+
+    var destination = fs.createWriteStream(filename + ".tmp");
+
+    var byteOffset = 0,
+      allow = true,
+      diff = 0,
+      start, end,
+      toRemoveStart = offset,
+      toRemoveEnd = offset + lengthToRemove;
+
+    var _getGoodBuffer = function(buffer){
+
+      // start = byteOffset;
+      //
+      // end = byteOffset + buffer.length;
+      //
+      // byteOffset += buffer.length;
+      //
+      // //all clear
+      // if (start > toRemoveEnd || end < toRemoveStart) {
+      //   this.queue(buffer);
+      //   return;
+      // }
+      //
+      // //start outside and end within removal range
+      // if (start <= toRemoveStart && end <= toRemoveEnd) {
+      //   //remove the file contents within removal range
+      //   var slicedBuf = buffer.slice(0, (end - offset));
+      //   this.queue(slicedBuf);
+      // }
+      // //start within removal range and end within it
+      // else if (start >= toRemoveStart && end <= toRemoveEnd) {
+      //   //don't add any contents to the output file
+      // }
+      // //start within removal range and end out of it
+      // else if (start >= toRemoveStart && end >= toRemoveEnd) {
+      //   var slicedBuf = buffer.slice((toRemoveEnd - start), buffer.length);
+      //   this.queue(slicedBuf);
+      //
+      //   //we have stepped over the removal range and have to
+      //   // do a splice and concat
+      // } else if (start <= toRemoveStart && end >= toRemoveEnd) {
+      //   var slicedBuf1 = buffer.slice(0, toRemoveStart);
+      //   var slicedBuf2 = buffer.slice(toRemoveEnd, buffer.length);
+      //
+      //   this.queue(Buffer.concat([slicedBuf1, slicedBuf2]));
+      // }
+    }
+
+    var onData = function(buffer) {
+
+      buffer = _getGoodBuffer(buffer);
+
+      if(buffer)
+        this.queue(buffer);
+    };
+
+    source.on('close', function() {
+
+      fs.unlink(filename, function(err) {
+        if (err)
+          throw err;
+        fs.renameSync(filename + ".tmp", filename);
+        process.nextTick(callback);
+      });
+
+    });
+
+    source.
+    pipe(new through(onData)).
+    pipe(destination);
+  }
+
   return {
-    remove: remove
+    remove: remove,
+    removeAll: removeAll
   };
 };
-//
-// var rar = new randomAccessRemove();
-//
-// rar.remove('test.txt', 0, 1024, function(err) {
-//   if (err)
-//     console.error(err);
-// });
 
 module.exports = randomAccessRemove;
