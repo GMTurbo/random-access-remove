@@ -7,7 +7,7 @@ var randomAccessRemove = function(options) {
 
   options = options || {
     chunkSize: 1024
-  }
+  };
 
   if (!(this instanceof randomAccessRemove))
     return new randomAccessRemove(options);
