@@ -13,15 +13,17 @@ var randomAccessRemove = function(options) {
     return new randomAccessRemove(options);
 
   function remove(filename, offset, lengthToRemove, callback) {
-    debugger;
 
     if (!fs.existsSync(filename)) {
+
       console.error(filename + " doesn't exist :(");
+
       process.nextTick(function() {
         callback({
           message: filename + " doesn't exist :("
-        })
-      })
+        });
+      });
+
       return;
     }
 
@@ -32,8 +34,8 @@ var randomAccessRemove = function(options) {
     var byteOffset = 0,
       allow = true,
       diff = 0,
-      start, end;
-    toRemoveStart = offset,
+      start, end,
+      toRemoveStart = offset,
       toRemoveEnd = offset + lengthToRemove;
 
     var onData = function(buffer) {
