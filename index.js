@@ -86,7 +86,7 @@ var randomAccessRemove = function(options) {
         if (tmpBuf){
           retBuffs.push(tmpBuf);
           buffer = buffer.slice(0,offset.end);
-          bufStart += offset.end;
+          bufStart = offset.end;
         }
 
       });

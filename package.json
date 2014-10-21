@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/GMTurbo/random-access-remove",
   "dependencies": {
+    "lodash": "^2.4.1",
     "through": "^2.3.6"
   },
   "devDependencies": {},
