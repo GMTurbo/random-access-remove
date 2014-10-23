@@ -24,7 +24,7 @@ rar.remove('test.txt', 0, 1024, function(err) {
 
 // or remove in bulk
 var file = 'test2.txt';
-var kb = 512;
+var kb = 1024;
 var size = fs.statSync(file).size;
 
 var exclude = [
