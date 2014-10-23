@@ -16,9 +16,27 @@ var randomAccessFile = require('random-access-remove');
 
 var rar = new randomAccessRemove();
 
+//remove a single piece
 rar.remove('test.txt', 0, 1024, function(err) {
   if (err)
     console.error(err);
+});
+
+// or remove in bulk
+var file = 'test2.txt';
+var kb = 512;
+var size = fs.statSync(file).size;
+
+var exclude = [
+	[0, kb],
+	[2 * kb + 1, kb],
+	[4 * kb + 1, kb],
+	[size - kb, kb]
+];
+
+rar.removeAll(file, exclude, function(err) {
+	if (err)
+		console.error(err);
 });
 
 ```
@@ -31,7 +49,7 @@ The format of this module is a copy of the awesome module [random-access-file](h
 Under the hood, this module does the following:
 - *creates a readstream of the file arg*
 - *creates a tmp output file (file + '.tmp')*
-- *intercepts the piped data and excludes the data within the range passed to it*
+- *intercepts the piped data and excludes the data within the range/ranges passed to it*
 - *deletes the original file arg*
 - *renames the .tmp file to the original file name*
 
