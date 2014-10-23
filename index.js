@@ -76,26 +76,17 @@ var randomAccessRemove = function(options) {
 
       debugger;
 
-      var retBuffs = [],
-        tmpBuf;
+      var buffOffset = 0;
 
       var exlusionsWithin = _.forEach(offsets, function(offset) {
 
-        tmpBuf = _getFilteredBuff(buffer, bufStart, bufEnd, offset.start, offset.end);
-
-        if (tmpBuf){
-          retBuffs.push(tmpBuf);
-          buffer = buffer.slice(0,offset.end);
-          bufStart = offset.end;
-        }
+        buffer = _getFilteredBuff(buffer, bufStart, bufEnd, offset.start - buffOffset, offset.end - buffOffset);
+        buffOffset += (offset.end - offset.start);
 
       });
 
-      if (retBuffs.length == 0)
-        return;
-
       /*result, num, key*/
-      return Buffer.concat(retBuffs);
+      return buffer;
     };
 
     var onData = function(buffer) {
@@ -186,17 +177,18 @@ var randomAccessRemove = function(options) {
     removeAll: removeAll
   };
 };
+
 var rar = new randomAccessRemove();
 
 var file = 'test2.txt';
-var kb = 1024;
+var kb = 512;
 var size = fs.statSync(file).size;
 
 var exclude = [
   [0, kb],
   [2 * kb + 1, kb],
   [4 * kb + 1, kb],
-  [size - kb, 512]
+  [size - kb, kb]
 ];
 
 rar.removeAll(file, exclude, function(err) {
