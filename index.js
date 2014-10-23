@@ -178,22 +178,4 @@ var randomAccessRemove = function(options) {
   };
 };
 
-var rar = new randomAccessRemove();
-
-var file = 'test2.txt';
-var kb = 512;
-var size = fs.statSync(file).size;
-
-var exclude = [
-  [0, kb],
-  [2 * kb + 1, kb],
-  [4 * kb + 1, kb],
-  [size - kb, kb]
-];
-
-rar.removeAll(file, exclude, function(err) {
-  if (err)
-    console.error(err);
-});
-
 module.exports = randomAccessRemove;
