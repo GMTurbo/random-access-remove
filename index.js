@@ -177,16 +177,16 @@ var randomAccessRemove = function(options) {
 function begin(oldFile, newFile) {
   // or remove in bulk
 
-  var start = function() {
+  var start = function(newFile) {
     var kb = 1024;
     var size = fs.statSync(newFile).size;
     // must be in ascending order by offset values
     //[ [offset, length], ...]
     var exclude = [
       [0, kb],
-      [~~(size / 4), kb],
+      [~~(size / 4), kb/2],
       [~~(size / 2), kb],
-      [~~(size - (size / 4)), kb],
+      [~~(size - (size / 4)), kb/2],
       [size - kb, kb]
     ];
 
@@ -196,16 +196,17 @@ function begin(oldFile, newFile) {
       if (err)
         console.error(err);
     });
-  }
+  };
 
   var oldFileStream = fs.createReadStream(oldFile),
       newFileStream = fs.createWriteStream(newFile);
 
   oldFileStream.on('end', function() {
-    start();
-  })
+    newFileStream.end();
+    start(newFile);
+  });
+  
   oldFileStream.pipe(newFileStream);
-
 };
 // var makeNumberedFile = (function(filename, count, cb) {
 //
