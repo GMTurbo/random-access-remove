@@ -56,14 +56,12 @@ var randomAccessRemove = function(options) {
 
     var _calculatePositions = function(offsetsAndLengths) {
 
-      var ret = [],
-        start, end;
+      var ret = [];
+
       for (var i = 0, len = offsetsAndLengths.length; i < len; i++) {
-        start = offsetsAndLengths[i][0],
-          end = start + offsetsAndLengths[i][1];
         ret.push({
-          start: start,
-          end: end
+          start: offsetsAndLengths[i][0],
+          end: offsetsAndLengths[i][0] + offsetsAndLengths[i][1]
         });
       }
       return ret;
@@ -78,7 +76,7 @@ var randomAccessRemove = function(options) {
 
       var exlusionsWithin = _.forEach(offsets, function(offset) {
 
-        buffer = _getFilteredBuff(buffer, bufStart, bufEnd, offset.start - buffOffset, offset.end - buffOffset);
+        buffer = _getFilteredBuff(buffer, bufStart, bufEnd - buffOffset, offset.start - buffOffset, offset.end - buffOffset);
         buffOffset += (offset.end - offset.start);
 
       });
