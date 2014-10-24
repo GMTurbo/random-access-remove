@@ -85,7 +85,6 @@ var randomAccessRemove = function(options) {
 
       });
 
-      /*result, num, key*/
       return buffer;
     };
 
