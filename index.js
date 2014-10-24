@@ -74,7 +74,7 @@ var randomAccessRemove = function(options) {
 
     var _getCutBuffer = function(buffer, bufStart, bufEnd) {
 
-      debugger;
+      //debugger;
 
       var buffOffset = 0;
 

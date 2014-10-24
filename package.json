@@ -1,6 +1,6 @@
 {
   "name": "random-access-remove",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "remove bytes within files given an offset and a length",
   "main": "index.js",
   "scripts": {
