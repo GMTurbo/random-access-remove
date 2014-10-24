@@ -27,7 +27,8 @@ var file = 'test2.txt';
 var kb = 1024;
 var size = fs.statSync(file).size;
 
-//[offset, length]
+// must be in ascending order by offset values
+//[ [offset, length], ...]
 var exclude* = [
 	[0, kb],
 	[2 * kb + 1, kb],
@@ -39,8 +40,6 @@ rar.removeAll(file, exclude, function(err) {
 	if (err)
 		console.error(err);
 });
-
-* offset value for each element must be in ascending order
 
 ```
 ## Inspiration
