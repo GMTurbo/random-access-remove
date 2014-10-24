@@ -17,7 +17,7 @@ var randomAccessFile = require('random-access-remove');
 var rar = new randomAccessRemove();
 
 //remove a single piece
-rar.remove('test.txt', 0, 1024, function(err) {
+rar.remove('test.txt', 0 /*offset*/, 1024 /*length*/, function(err) {
   if (err)
     console.error(err);
 });
@@ -27,7 +27,8 @@ var file = 'test2.txt';
 var kb = 1024;
 var size = fs.statSync(file).size;
 
-var exclude = [
+//[offset, length]
+var exclude* = [
 	[0, kb],
 	[2 * kb + 1, kb],
 	[4 * kb + 1, kb],
@@ -38,6 +39,8 @@ rar.removeAll(file, exclude, function(err) {
 	if (err)
 		console.error(err);
 });
+
+* offset value for each element must be in ascending order
 
 ```
 ## Inspiration
