@@ -100,9 +100,20 @@ var randomAccessRemove = function(options) {
     source.on('close', function() {
 
       fs.unlink(filename, function(err) {
-        if (err)
-          throw err;
-        fs.renameSync(filename + ".tmp", filename);
+        if (err){
+          process.nextTick(function(){
+            callback(err);
+          });
+          return;
+        }
+        try {
+          fs.renameSync(filename + ".tmp", filename);
+        } catch (e) {
+          process.nextTick(function(){
+            callback(e);
+          });
+          return;
+        }
         process.nextTick(callback);
       });
 
@@ -161,7 +172,10 @@ var randomAccessRemove = function(options) {
         try {
           fs.renameSync(filename + ".tmp", filename);
         } catch (e) {
-
+          process.nextTick(function(){
+            callback(e);
+          });
+          return;
         }
         process.nextTick(callback);
       });
