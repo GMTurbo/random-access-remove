@@ -38,14 +38,13 @@ var randomAccessRemove = function(options) {
   }
 
   function removeAll(filename, offsets, callback) {
+
     if (!fs.existsSync(filename)) {
 
       console.error(filename + " doesn't exist :(");
 
       process.nextTick(function() {
-        callback({
-          message: filename + " doesn't exist :("
-        });
+        callback(filename + " doesn't exist :(");
       });
 
       return;
@@ -57,12 +56,14 @@ var randomAccessRemove = function(options) {
 
     var _calculatePositions = function(offsetsAndLengths) {
 
-      var ret = [];
-
+      var ret = [],
+        start, end;
       for (var i = 0, len = offsetsAndLengths.length; i < len; i++) {
+        start = offsetsAndLengths[i][0],
+          end = start + offsetsAndLengths[i][1];
         ret.push({
-          start: offsetsAndLengths[i][0],
-          end: offsetsAndLengths[i][0] + offsetsAndLengths[i][1]
+          start: start,
+          end: end
         });
       }
       return ret;
@@ -77,7 +78,7 @@ var randomAccessRemove = function(options) {
 
       var exlusionsWithin = _.forEach(offsets, function(offset) {
 
-        buffer = _getFilteredBuff(buffer, bufStart, bufEnd - buffOffset, offset.start - buffOffset, offset.end - buffOffset);
+        buffer = _getFilteredBuff(buffer, bufStart, bufEnd, offset.start - buffOffset, offset.end - buffOffset);
         buffOffset += (offset.end - offset.start);
 
       });
@@ -121,9 +122,7 @@ var randomAccessRemove = function(options) {
       console.error(filename + " doesn't exist :(");
 
       process.nextTick(function() {
-        callback({
-          message: filename + " doesn't exist :("
-        });
+        callback(filename + " doesn't exist :(");
       });
 
       return;
@@ -155,9 +154,17 @@ var randomAccessRemove = function(options) {
     source.on('close', function() {
 
       fs.unlink(filename, function(err) {
-        if (err)
-          throw err;
-        fs.renameSync(filename + ".tmp", filename);
+        if (err){
+          process.nextTick(function(){
+            callback(err);
+          });
+          return;
+        }
+        try {
+          fs.renameSync(filename + ".tmp", filename);
+        } catch (e) {
+
+        }
         process.nextTick(callback);
       });
 
@@ -173,65 +180,5 @@ var randomAccessRemove = function(options) {
     removeAll: removeAll
   };
 };
-
-function begin(oldFile, newFile) {
-  // or remove in bulk
-
-  var start = function(newFile) {
-    var kb = 1024;
-    var size = fs.statSync(newFile).size;
-    // must be in ascending order by offset values
-    //[ [offset, length], ...]
-    var exclude = [
-      [0, kb],
-      [~~(size / 4), kb/2],
-      [~~(size / 2), kb],
-      [~~(size - (size / 4)), kb/2],
-      [size - kb, kb]
-    ];
-
-    var rar = new randomAccessRemove();
-
-    rar.removeAll(newFile, exclude, function(err) {
-      if (err)
-        console.error(err);
-    });
-  };
-
-  var oldFileStream = fs.createReadStream(oldFile),
-      newFileStream = fs.createWriteStream(newFile);
-
-  oldFileStream.on('end', function() {
-    newFileStream.end();
-    start(newFile);
-  });
-  
-  oldFileStream.pipe(newFileStream);
-};
-// var makeNumberedFile = (function(filename, count, cb) {
-//
-//   var fs = require('fs');
-//
-//   var stream = fs.createWriteStream(filename, {
-//     flags: 'w'
-//   });
-//
-//   var i = 0;
-//
-//   function write() {
-//     if (i === count) {
-//       process.nextTick(function() {
-//         process.exit();
-//       })
-//     }; // A callback could go here to know when it's done.
-//     while (stream.write((i++).toString() + '\n') && i < count);
-//     stream.once('drain', write);
-//   }
-//   write(); // Initial call.
-//
-//
-// })('test.txt', 10000, begin);
-
-begin('test.txt', 'test2.txt');
 
 module.exports = randomAccessRemove;
