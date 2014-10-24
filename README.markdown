@@ -29,7 +29,7 @@ var size = fs.statSync(file).size;
 
 // must be in ascending order by offset values
 //[ [offset, length], ...]
-var exclude* = [
+var exclude = [
 	[0, kb],
 	[2 * kb + 1, kb],
 	[4 * kb + 1, kb],
