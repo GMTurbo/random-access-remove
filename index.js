@@ -12,6 +12,28 @@ var randomAccessRemove = function(options) {
   if (!(this instanceof randomAccessRemove))
     return new randomAccessRemove(options);
 
+  var _unlink = function(filename, callback){
+
+    fs.unlink(filename, function(err) {
+      if (err){
+        process.nextTick(function(){
+          callback(err);
+        });
+        return;
+      }
+      try {
+        fs.renameSync(filename + ".tmp", filename);
+      } catch (e) {
+        process.nextTick(function(){
+          callback(e);
+        });
+        return;
+      }
+      process.nextTick(callback);
+    });
+
+  };
+
   var _getFilteredBuff = function(buffer, start, end, toRemoveStart, toRemoveEnd) {
     //all clear
     if (start > toRemoveEnd || end < toRemoveStart) {
@@ -99,23 +121,7 @@ var randomAccessRemove = function(options) {
 
     source.on('close', function() {
 
-      fs.unlink(filename, function(err) {
-        if (err){
-          process.nextTick(function(){
-            callback(err);
-          });
-          return;
-        }
-        try {
-          fs.renameSync(filename + ".tmp", filename);
-        } catch (e) {
-          process.nextTick(function(){
-            callback(e);
-          });
-          return;
-        }
-        process.nextTick(callback);
-      });
+      _unlink(filename, callback);
 
     });
 
@@ -162,23 +168,7 @@ var randomAccessRemove = function(options) {
 
     source.on('close', function() {
 
-      fs.unlink(filename, function(err) {
-        if (err){
-          process.nextTick(function(){
-            callback(err);
-          });
-          return;
-        }
-        try {
-          fs.renameSync(filename + ".tmp", filename);
-        } catch (e) {
-          process.nextTick(function(){
-            callback(e);
-          });
-          return;
-        }
-        process.nextTick(callback);
-      });
+      _unlink(filename, callback);
 
     });
 
